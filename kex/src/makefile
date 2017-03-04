@@ -1,7 +1,7 @@
 CC = g++
 FLAGS = -pedantic -Wall -std=c++11 -g
 
-main.out: graham_scan.cpp point.o
+main.out: makePoints.cpp point.o
 	$(CC) $(FLAGS) $^ -o $@
 	./main.out
 

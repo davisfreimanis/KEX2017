@@ -1,0 +1,4 @@
+1) Find centroid of given points.
+2) Transform to fit origo at the centroid.
+3) For each quadrant create a thread that finds the point in that quadrant with the largest x coordinate, largest y coordinate and the one with the largest euclidian distance to the origin. (note that these can be the same point)
+4) 

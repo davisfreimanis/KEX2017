@@ -15,9 +15,8 @@ Point::Point(double a, double b) {
     y = b;
 }
 
-/*
-bool operator < (Point b) {
+bool Point::operator<(Point b) {
     if (y != b.y)
         return y < b.y;
     return x < b.x;
-}*/
+}

@@ -5,13 +5,15 @@
 
 class Point {
 
- public:
-  Point();
-  Point(double x, double y);
+public:
+    Point();
 
- private:
-  double x;
-  double y;
+    Point(double x, double y);
+
+    bool operator<(Point b);
+
+    double x;
+    double y;
 };
 
 //Point operator+(const Point &);

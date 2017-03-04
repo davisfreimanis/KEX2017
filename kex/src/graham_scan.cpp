@@ -1,19 +1,8 @@
 #include <cstdio>
 #include <stack>
 #include <algorithm>
+#include "point.h"
 using namespace std;
-
-class Point    {
-public:
-    int x, y;
-
-    // comparison is done first on y coordinate and then on x coordinate
-    bool operator < (Point b) {
-        if (y != b.y)
-            return y < b.y;
-        return x < b.x;
-    }
-};
 
 // Point having the least y coordinate, used for sorting other points
 // according to polar angle about this point
@@ -92,7 +81,7 @@ int main()  {
         Point p = hull.top();
         hull.pop();
 
-        printf("(%d, %d)\n", p.x, p.y);
+        printf("(%f, %f)\n", p.x, p.y);
     }
 
     return 0;

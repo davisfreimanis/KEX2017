@@ -16,6 +16,7 @@ public:
     double y;
 };
 
+bool operator==(Point &, Point &);
 //Point operator+(const Point &);
 
 

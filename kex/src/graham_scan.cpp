@@ -2,6 +2,7 @@
 #include <stack>
 #include <algorithm>
 #include "point.h"
+
 using namespace std;
 
 // Point having the least y coordinate, used for sorting other points
@@ -10,8 +11,8 @@ Point pivot;
 
 // returns -1 if a -> b -> c forms a counter-clockwise turn,
 // +1 for a clockwise turn, 0 if they are collinear
-int ccw(Point a, Point b, Point c) {
-    int area = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+double ccw(Point a, Point b, Point c) {
+    double area = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
     if (area > 0)
         return -1;
     else if (area < 0)
@@ -20,14 +21,14 @@ int ccw(Point a, Point b, Point c) {
 }
 
 // returns square of Euclidean distance between two points
-int sqrDist(Point a, Point b)  {
-    int dx = a.x - b.x, dy = a.y - b.y;
+double sqrDist(Point a, Point b)  {
+    double dx = a.x - b.x, dy = a.y - b.y;
     return dx * dx + dy * dy;
 }
 
 // used for sorting points according to polar order w.r.t the pivot
 bool POLAR_ORDER(Point a, Point b)  {
-    int order = ccw(pivot, a, b);
+    double order = ccw(pivot, a, b);
     if (order == 0)
         return sqrDist(pivot, a) < sqrDist(pivot, b);
     return (order == -1);
@@ -72,7 +73,8 @@ stack<Point> grahamScan(Point *points, int N)    {
     return hull;
 }
 
-int main()  {
+int main() {
+
     Point points[] = {{0, 0}, {1, 1}, {2, 2}, {3, -1}};
     int N = sizeof(points)/sizeof(points[0]);
 

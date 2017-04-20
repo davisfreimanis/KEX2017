@@ -5,7 +5,7 @@
 using namespace std;
 
 vector<Point*> manualGenPoints(int nmbOfPoints);
-vector<Point*> randomGenPoints(int nmbOfPoints);
+vector<Point*> randomGenPoints(int nmbOfPoints, int mean, int covar);
 
 int main(){
 	int mode;
@@ -20,7 +20,7 @@ int main(){
 			points = manualGenPoints(nmbOfPoints);
 			break;
 		case 2:
-			points = randomGenPoints(nmbOfPoints);
+			points = randomGenPoints(nmbOfPoints, 0, 10);
 			break;
 		default:
 			break;
@@ -42,10 +42,10 @@ vector<Point*> manualGenPoints(int nmbOfPoints){
 
 	return pointVector;
 }
-vector<Point*> randomGenPoints(int nmbOfPoints){
+vector<Point*> randomGenPoints(int nmbOfPoints, int mean, int covar){
 	vector<Point*> pointVector(nmbOfPoints);
 	default_random_engine generator;
-	normal_distribution<double> distribution(0.0,10.0);
+	normal_distribution<double> distribution(mean, covar);
 	for (int i = 0; i < nmbOfPoints; ++i)
 	{
 		pointVector[i] = (new Point(distribution(generator),distribution(generator)));

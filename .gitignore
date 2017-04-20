@@ -1,3 +1,6 @@
+# CXX tests
+src/testrunner.cpp
+
 # Compiled Object files
 *.slo
 *.lo

@@ -20,3 +20,7 @@ bool Point::operator<(Point b) {
         return y < b.y;
     return x < b.x;
 }
+
+bool operator==(Point &a, Point &b) {
+    return (a.x == b.x && a.y == b.y);
+}

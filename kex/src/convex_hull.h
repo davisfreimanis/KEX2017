@@ -11,7 +11,7 @@ template<class AT, class AF, class BT, class BF>
 typename impl::TypeJoin<AT,BT>::type
 cross(const Point<AT,AF> &a, const Point<BT,BF> &b) {
     return a.x*b.y - a.y*b.x;
-}
+}n
 // Convex hull of set of 2D-points.
 // Return size of hull and write hull point indices to res
 // in counterclockwise order.

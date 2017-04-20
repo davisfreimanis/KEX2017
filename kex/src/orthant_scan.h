@@ -10,6 +10,3 @@ bool pointInTriangle(Point a, Point b, Point c, Point p);
 Point findCenter(Point *points, int size, Point center);
 
 #endif //KEX2017_ORTHANT_SCAN_H
-
-
-

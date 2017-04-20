@@ -2,9 +2,11 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <stack>
 
 #include "../src/point.h"
 #include "../src/orthant_scan.h"
+#include "../src/graham_scan.h"
 
 using namespace std;
 
@@ -61,5 +63,79 @@ public:
 		center = findCenter(&v[0], v.size(), center);
 		TS_ASSERT_EQUALS(center.x, 1.5);
 		TS_ASSERT_EQUALS(center.y, 0.5);
+	}
+
+	void testGrahamScan() {
+		vector<Point> points;
+		points.reserve(10);
+		Point a(0,0);
+		Point b(1,1);
+		Point c(2,2);
+		Point d(3,-1);
+
+		points.push_back(a);
+		points.push_back(b);
+		points.push_back(c);
+		points.push_back(d);
+
+		stack<Point> hull = grahamScan(&points[0], points.size());
+
+		Point p = hull.top();
+		TS_ASSERT_EQUALS(p.x, 0);
+		TS_ASSERT_EQUALS(p.y, 0);
+		hull.pop();
+		p = hull.top();
+		TS_ASSERT_EQUALS(p.x, 2);
+		TS_ASSERT_EQUALS(p.y, 2);
+		hull.pop();
+		p = hull.top();
+		TS_ASSERT_EQUALS(p.x, 3);
+		TS_ASSERT_EQUALS(p.y, -1);
+		hull.pop();
+	}
+
+	void testGrahamScanKattis() {
+		vector<Point> points;
+		points.reserve(10);
+		Point a(41,-6);
+		Point b(-24,-74);
+		Point c(-51,-6);
+		Point d(73,17);
+		Point e(-30,-34);
+
+		points.push_back(a);
+		points.push_back(b);
+		points.push_back(c);
+		points.push_back(d);
+		points.push_back(e);
+
+		stack<Point> hull = grahamScan(&points[0], points.size());
+
+		Point p = hull.top();
+		TS_ASSERT_EQUALS(p.x, -51);
+		TS_ASSERT_EQUALS(p.y, -6);
+		hull.pop();
+		p = hull.top();
+		TS_ASSERT_EQUALS(p.x, 73);
+		TS_ASSERT_EQUALS(p.y, 17);
+		hull.pop();
+		p = hull.top();
+		TS_ASSERT_EQUALS(p.x, -24);
+		TS_ASSERT_EQUALS(p.y, -74);
+		hull.pop();
+	}
+
+	void testGrahamScanEqual() {
+		vector<Point> points;
+		points.reserve(10);
+		Point a(50,50);
+		Point b(50,50);
+
+		points.push_back(a);
+		points.push_back(b);
+
+		stack<Point> hull = grahamScan(&points[0], points.size());
+
+		TS_ASSERT_EQUALS(hull.size(), 1);
 	}
 };

@@ -17,6 +17,7 @@ public:
 };
 
 bool operator==(Point &, Point &);
+bool operator!=(Point &, Point &);
 //Point operator+(const Point &);
 
 

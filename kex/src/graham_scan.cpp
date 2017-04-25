@@ -1,5 +1,5 @@
 #include <cstdio>
-#include <stack>
+#include <vector>
 #include <algorithm>
 #include "point.h"
 #include "graham_scan.h"
@@ -35,8 +35,8 @@ bool POLAR_ORDER(Point a, Point b) {
 	return (order == -1);
 }
 
-stack<Point> grahamScan(Point *points, int N) {
-	stack<Point> hull;
+vector<Point> grahamScan(Point *points, int N) {
+	vector<Point> hull;
 
 	if (N < 3) {
 		return hull;
@@ -60,19 +60,19 @@ stack<Point> grahamScan(Point *points, int N) {
 	pivot = points[0];
 	sort(points + 1, points + N, POLAR_ORDER);
 
-	hull.push(points[0]);
-	hull.push(points[1]);
-	hull.push(points[2]);
+	hull.push_back(points[0]);
+	hull.push_back(points[1]);
+	hull.push_back(points[2]);
 
 	for (int i = 3; i < N; i++) {
-		Point top = hull.top();
-		hull.pop();
-		while (ccw(hull.top(), top, points[i]) != -1) {
-			top = hull.top();
-			hull.pop();
+		Point top = hull.back();
+		hull.pop_back();
+		while (ccw(hull.back(), top, points[i]) != -1) {
+			top = hull.back();
+			hull.pop_back();
 		}
-		hull.push(top);
-		hull.push(points[i]);
+		hull.push_back(top);
+		hull.push_back(points[i]);
 	}
 	return hull;
 }

@@ -60,9 +60,76 @@ public:
 		v.push_back(z);
 		v.push_back(h);
 
-		center = findCenter(&v[0], v.size(), center);
+		center = findCenter(v, center);
 		TS_ASSERT_EQUALS(center.x, 1.5);
 		TS_ASSERT_EQUALS(center.y, 0.5);
+	}
+
+	void testQuadrantPartition() {
+		int n = 10;
+		vector <Point> v; // input points
+		v.reserve(n);
+
+		vector<Point> p1;
+		vector<Point> p2;
+		vector<Point> p3;
+		vector<Point> p4;
+
+		Point center(0, 0);
+		Point x(0, 0);
+		Point y(1, 1);
+		Point z(2, 2);
+		Point h(3, -1);
+
+		v.push_back(x);
+		v.push_back(y);
+		v.push_back(z);
+		v.push_back(h);
+
+		center = findCenter(v, center);
+
+		quadrantPartition(p1, p2, p3, p4, v, center);
+
+		TS_ASSERT_EQUALS(p1.size(), 1);
+		TS_ASSERT_EQUALS(p2.size(), 1);
+		TS_ASSERT_EQUALS(p3.size(), 1);
+		TS_ASSERT_EQUALS(p4.size(), 1);
+	}
+
+	void testMaxQuadrantPoints() {
+		int n = 10;
+		vector <Point> v; // input points
+		v.reserve(n);
+
+		vector<Point> p1;
+		vector<Point> p2;
+		vector<Point> p3;
+		vector<Point> p4;
+		vector<Point> ep;
+
+		Point center(0, 0);
+		Point x(0, 0);
+		Point y(1, 1);
+		Point z(2, 2);
+		Point h(3, -1);
+
+		v.push_back(x);
+		v.push_back(y);
+		v.push_back(z);
+		v.push_back(h);
+
+		center = findCenter(v, center);
+
+		quadrantPartition(p1, p2, p3, p4, v, center);
+
+		maxOrthantPoints(p1, p2, p3, p4, ep);
+
+		TS_ASSERT_EQUALS(p1[0], z);
+		TS_ASSERT_EQUALS(p2[0], y);
+		TS_ASSERT_EQUALS(p3[0], x);
+		TS_ASSERT_EQUALS(p4[0], h);
+
+		TS_ASSERT_EQUALS(ep.size(), 4);
 	}
 
 	void testGrahamScan() {
@@ -78,20 +145,20 @@ public:
 		points.push_back(c);
 		points.push_back(d);
 
-		stack<Point> hull = grahamScan(&points[0], points.size());
+		vector<Point> hull = grahamScan(&points[0], points.size());
 
-		Point p = hull.top();
+		Point p = hull.back();
 		TS_ASSERT_EQUALS(p.x, 0);
 		TS_ASSERT_EQUALS(p.y, 0);
-		hull.pop();
-		p = hull.top();
+		hull.pop_back();
+		p = hull.back();
 		TS_ASSERT_EQUALS(p.x, 2);
 		TS_ASSERT_EQUALS(p.y, 2);
-		hull.pop();
-		p = hull.top();
+		hull.pop_back();
+		p = hull.back();
 		TS_ASSERT_EQUALS(p.x, 3);
 		TS_ASSERT_EQUALS(p.y, -1);
-		hull.pop();
+		hull.pop_back();
 	}
 
 	void testGrahamScanKattis() {
@@ -109,33 +176,20 @@ public:
 		points.push_back(d);
 		points.push_back(e);
 
-		stack<Point> hull = grahamScan(&points[0], points.size());
+		vector<Point> hull = grahamScan(&points[0], points.size());
 
-		Point p = hull.top();
+		Point p = hull.back();
 		TS_ASSERT_EQUALS(p.x, -51);
 		TS_ASSERT_EQUALS(p.y, -6);
-		hull.pop();
-		p = hull.top();
+		hull.pop_back();
+		p = hull.back();
 		TS_ASSERT_EQUALS(p.x, 73);
 		TS_ASSERT_EQUALS(p.y, 17);
-		hull.pop();
-		p = hull.top();
+		hull.pop_back();
+		p = hull.back();
 		TS_ASSERT_EQUALS(p.x, -24);
 		TS_ASSERT_EQUALS(p.y, -74);
-		hull.pop();
+		hull.pop_back();
 	}
 
-	void testGrahamScanEqual() {
-		vector<Point> points;
-		points.reserve(10);
-		Point a(50,50);
-		Point b(50,50);
-
-		points.push_back(a);
-		points.push_back(b);
-
-		stack<Point> hull = grahamScan(&points[0], points.size());
-
-		TS_ASSERT_EQUALS(hull.size(), 1);
-	}
 };

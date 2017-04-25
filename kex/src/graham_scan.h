@@ -1,5 +1,5 @@
 #include <cstdio>
-#include <stack>
+#include <vector>
 #include <algorithm>
 #include "point.h"
 
@@ -15,6 +15,6 @@ double ccw(Point a, Point b, Point c);
 double sqrDist(Point a, Point b);
 // used for sorting points according to polar order w.r.t the pivot
 bool POLAR_ORDER(Point a, Point b);
-stack<Point> grahamScan(Point *points, int N);
+vector<Point> grahamScan(Point *points, int N);
 
 #endif //KEX2017_GRAHAMS_SCAN_H

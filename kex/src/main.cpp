@@ -24,6 +24,7 @@ int main() {
 			points.push_back(a);
 		}
 
+		// remove duplicate points
 		sort(points.begin(), points.end());
 		points.erase(unique(points.begin(), points.end()), points.end());
 
@@ -33,13 +34,13 @@ int main() {
 				cout << points[i].x << " " << points[i].y << endl;
 			}
 		} else {
-			stack<Point> hull = grahamScan(&points[0], points.size());
+			vector<Point> hull = grahamScan(&points[0], points.size());
 			cout << hull.size() << endl;
-			while (!hull.empty()) {
-				Point p = hull.top();
-				hull.pop();
-				cout << p.x << " " << p.y << endl;
+
+			for (int i = 0; i < hull.size(); ++i) {
+				cout << hull[i].x << " " << hull[i].y << endl;
 			}
+
 		}
 
 	}

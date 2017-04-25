@@ -24,3 +24,7 @@ bool Point::operator<(Point b) {
 bool operator==(Point &a, Point &b) {
     return (a.x == b.x && a.y == b.y);
 }
+
+bool operator!=(Point &a, Point &b) {
+	return (a.x != b.x || a.y != b.y);
+}

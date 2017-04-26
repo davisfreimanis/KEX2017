@@ -44,6 +44,21 @@ public:
 		TS_ASSERT_EQUALS(pointInTriangle(x, y, z, c), false);
 	}
 
+	void testPointInTriangleBoundries() {
+		Point a(0,0);
+		Point b(2,0);
+		Point c(2,2);
+
+		Point x(1,0); // on edge
+		Point y(1,0); // on edge
+		Point z(2,0); // on corner
+
+		TS_ASSERT_EQUALS(pointInTriangle(a, b, c, x), false); // ccw
+		TS_ASSERT_EQUALS(pointInTriangle(a, c, b, y), false); // cw
+		TS_ASSERT_EQUALS(pointInTriangle(a, b, c, z), false); // corner
+		TS_ASSERT_EQUALS(pointInTriangle(a, c, b, z), false); // corner
+	}
+
 	void testFindCenter() {
 		int n = 10;
 		vector <Point> v; // input points

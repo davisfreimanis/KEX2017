@@ -48,7 +48,9 @@ void adjustCoordinates(vector<Point> &points, double dx, double dy) {
 	}
 }
 
-
+/*
+ * Partitions the points in 4 vectors corresponding to each vector
+ */
 void quadrantPartition(vector<Point> &p1, vector<Point> &p2, vector<Point> &p3, vector<Point> &p4, vector<Point> &points, Point c) {
 	for (auto p : points) {
 		if(p.x >= c.x && p.y >= c.y) { // Q1
@@ -63,6 +65,9 @@ void quadrantPartition(vector<Point> &p1, vector<Point> &p2, vector<Point> &p3, 
 	}
 }
 
+/*
+ * Adds extreme points in quadrant to vector
+ */
 void maxOrthantPointsHelper(vector<Point> &points, vector<Point> &ep) {
 	Point curX(0,0);
 	Point curY(0,0);
@@ -103,6 +108,9 @@ void maxOrthantPointsHelper(vector<Point> &points, vector<Point> &ep) {
 	}
 }
 
+/*
+ * Calls quadrantPartitionHelper for each quadrant to populate quadrant vectors
+ */
 void maxOrthantPoints(vector<Point> &p1, vector<Point> &p2, vector<Point> &p3, vector<Point> &p4, vector<Point> &ep) {
 	if(p1.size() > 0) {
 		maxOrthantPointsHelper(p1, ep);

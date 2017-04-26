@@ -15,6 +15,6 @@ double ccw(Point a, Point b, Point c);
 double sqrDist(Point a, Point b);
 // used for sorting points according to polar order w.r.t the pivot
 bool POLAR_ORDER(Point a, Point b);
-vector<Point> grahamScan(Point *points, int N);
+void grahamScan(vector<Point> &points, vector<Point> &bp);
 
 #endif //KEX2017_GRAHAMS_SCAN_H

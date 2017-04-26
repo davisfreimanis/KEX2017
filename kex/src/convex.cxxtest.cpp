@@ -149,6 +149,7 @@ public:
 
 	void testGrahamScan() {
 		vector<Point> points;
+		vector<Point> bp;
 		points.reserve(10);
 		Point a(0,0);
 		Point b(1,1);
@@ -160,24 +161,25 @@ public:
 		points.push_back(c);
 		points.push_back(d);
 
-		vector<Point> hull = grahamScan(&points[0], points.size());
+		grahamScan(points, bp);
 
-		Point p = hull.back();
+		Point p = bp.back();
 		TS_ASSERT_EQUALS(p.x, 0);
 		TS_ASSERT_EQUALS(p.y, 0);
-		hull.pop_back();
-		p = hull.back();
+		bp.pop_back();
+		p = bp.back();
 		TS_ASSERT_EQUALS(p.x, 2);
 		TS_ASSERT_EQUALS(p.y, 2);
-		hull.pop_back();
-		p = hull.back();
+		bp.pop_back();
+		p = bp.back();
 		TS_ASSERT_EQUALS(p.x, 3);
 		TS_ASSERT_EQUALS(p.y, -1);
-		hull.pop_back();
+		bp.pop_back();
 	}
 
 	void testGrahamScanKattis() {
 		vector<Point> points;
+		vector<Point> bp;
 		points.reserve(10);
 		Point a(41,-6);
 		Point b(-24,-74);
@@ -191,20 +193,20 @@ public:
 		points.push_back(d);
 		points.push_back(e);
 
-		vector<Point> hull = grahamScan(&points[0], points.size());
+		grahamScan(points, bp);
 
-		Point p = hull.back();
+		Point p = bp.back();
 		TS_ASSERT_EQUALS(p.x, -51);
 		TS_ASSERT_EQUALS(p.y, -6);
-		hull.pop_back();
-		p = hull.back();
+		bp.pop_back();
+		p = bp.back();
 		TS_ASSERT_EQUALS(p.x, 73);
 		TS_ASSERT_EQUALS(p.y, 17);
-		hull.pop_back();
-		p = hull.back();
+		bp.pop_back();
+		p = bp.back();
 		TS_ASSERT_EQUALS(p.x, -24);
 		TS_ASSERT_EQUALS(p.y, -74);
-		hull.pop_back();
+		bp.pop_back();
 	}
 
 };

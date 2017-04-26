@@ -35,17 +35,17 @@ bool POLAR_ORDER(Point a, Point b) {
 	return (order == -1);
 }
 
-vector<Point> grahamScan(Point *points, int N) {
-	vector<Point> hull;
+void grahamScan(vector<Point> &points, vector<Point> &bp) {
+	if (points.size() < 3) {
+		//TODO add only points to bp
 
-	if (N < 3) {
-		return hull;
+		return;
 	}
 
 	// find the point having the least y coordinate (pivot),
 	// ties are broken in favor of lower x coordinate
 	int leastY = 0;
-	for (int i = 1; i < N; i++) {
+	for (int i = 1; i < points.size(); i++) {
 		if (points[i] < points[leastY]) {
 			leastY = i;
 		}
@@ -58,21 +58,21 @@ vector<Point> grahamScan(Point *points, int N) {
 
 	// sort the remaining point according to polar order about the pivot
 	pivot = points[0];
-	sort(points + 1, points + N, POLAR_ORDER);
+	sort(points.begin()+1, points.end(), POLAR_ORDER);
 
-	hull.push_back(points[0]);
-	hull.push_back(points[1]);
-	hull.push_back(points[2]);
+	bp.push_back(points[0]);
+	bp.push_back(points[1]);
+	bp.push_back(points[2]);
 
-	for (int i = 3; i < N; i++) {
-		Point top = hull.back();
-		hull.pop_back();
-		while (ccw(hull.back(), top, points[i]) != -1) {
-			top = hull.back();
-			hull.pop_back();
+	for (int i = 3; i < points.size(); i++) {
+		Point top = bp.back();
+		bp.pop_back();
+		while (ccw(bp.back(), top, points[i]) != -1) {
+			top = bp.back();
+			bp.pop_back();
 		}
-		hull.push_back(top);
-		hull.push_back(points[i]);
+		bp.push_back(top);
+		bp.push_back(points[i]);
 	}
-	return hull;
+	return;
 }

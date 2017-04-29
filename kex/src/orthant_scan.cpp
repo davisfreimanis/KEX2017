@@ -10,6 +10,7 @@ using namespace std;
 /*
  * Checks if point p is inside triangle made of a, b and c
  * http://stackoverflow.com/a/14382692
+ * True if point in triangle, False otherwise
  */
 bool pointInTriangle(Point a, Point b, Point c, Point p) {
     double area = 0.5 * (-b.y*c.x + a.y*(-b.x + c.x) + a.x * (b.y - c.y) + b.x * c.y);
@@ -126,14 +127,71 @@ void maxOrthantPoints(vector<Point> &p1, vector<Point> &p2, vector<Point> &p3, v
 	}
 }
 
+void findInterior(Point center, vector<Point> &points, vector<Point> &bp, vector<Point> &ip) {
+	Point first = bp[0];
+	Point last = bp[bp.size()-1];
+
+	for(auto p : points) {
+		for(int i = 0; i < bp.size()-1; i++) {
+			if(pointInTriangle(center, bp[i], bp[i+1], p)) {
+				ip.push_back(p);
+				break;
+			}
+		}
+		if(pointInTriangle(center, first, last, p)) {
+			ip.push_back(p);
+			break;
+		}
+	}
+}
+
+/*
+ * Calculates the final set of points after the round
+ * p <- p - bp - ip
+ */
+void pointSetSubtraction(vector<Point> &points, vector<Point> &bp, vector<Point> &ip) {
+	vector<Point> res;
+
+	sort(points.begin(), points.end());
+	sort(bp.begin(), bp.end());
+
+	// res <- p - bp
+	std::set_difference(points.begin(), points.end(), bp.begin(), bp.end(),
+						std::inserter(res, res.end()));
+
+	sort(res.begin(), res.end());
+	sort(ip.begin(), ip.end());
+	points.clear();
+
+	// p <- res - ip
+	std::set_difference(res.begin(), res.end(), ip.begin(), ip.end(),
+						std::inserter(points, points.end()));
+
+	bp.clear();
+	ip.clear();
+}
+
 vector<Point> orthantScan(Point *Points, int size) {
-    vector<Point> bp(size);
-    vector<Point> ep(size);
+    vector<Point> bp;
+    vector<Point> ep;
+	vector<Point> res;
 
     vector<Point> p1(size);
     vector<Point> p2(size);
     vector<Point> p3(size);
     vector<Point> p4(size);
 
+	Point a(0,0);
+	Point b(1,1);
+	Point c(2,2);
+	Point d(3,-1);
+
+	bp.push_back(a);
+	bp.push_back(b);
+	bp.push_back(c);
+
+	ep.push_back(b);
+	ep.push_back(c);
+	ep.push_back(d);
 
 }

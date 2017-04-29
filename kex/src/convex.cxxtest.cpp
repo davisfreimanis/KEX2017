@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <stack>
+#include <algorithm>
 
 #include "../src/point.h"
 #include "../src/orthant_scan.h"
@@ -207,6 +208,91 @@ public:
 		TS_ASSERT_EQUALS(p.x, -24);
 		TS_ASSERT_EQUALS(p.y, -74);
 		bp.pop_back();
+	}
+
+	void testSetDifference() {
+		vector<Point> bp;
+		vector<Point> ip;
+		vector<Point> points;
+
+		Point a(0,-2);
+		Point b(2,-1);
+		Point c(3,3);
+		Point d(-1,3);
+		Point e(-3,0);
+		Point center(0,0);
+
+		Point f(5,5);
+		Point g(1,0);
+		Point h(0,1);
+		Point i(-1,1);
+
+		bp.push_back(a);
+		bp.push_back(b);
+		bp.push_back(c);
+		bp.push_back(d);
+		bp.push_back(e);
+
+		points.push_back(a);
+		points.push_back(b);
+		points.push_back(c);
+		points.push_back(d);
+		points.push_back(e);
+		points.push_back(f);
+		points.push_back(g);
+		points.push_back(h);
+		points.push_back(i);
+
+		findInterior(center, points, bp, ip);
+
+		pointSetSubtraction(points, bp, ip);
+
+		cout << points.size() << endl;
+		for(auto p : points) {
+			cout << p.x << " " << p.y << endl;
+		}
+	}
+
+	void testInteriorPoints() {
+		vector<Point> bp;
+		vector<Point> ip;
+		vector<Point> points;
+
+		Point a(0,-2);
+		Point b(2,-1);
+		Point c(3,3);
+		Point d(-1,3);
+		Point e(-3,0);
+		Point center(0,0);
+
+		Point f(5,5);
+		Point g(1,0);
+		Point h(0,1);
+		Point i(-1,1);
+
+		bp.push_back(a);
+		bp.push_back(b);
+		bp.push_back(c);
+		bp.push_back(d);
+		bp.push_back(e);
+
+		points.push_back(a);
+		points.push_back(b);
+		points.push_back(c);
+		points.push_back(d);
+		points.push_back(e);
+		points.push_back(f);
+		points.push_back(g);
+		points.push_back(h);
+		points.push_back(i);
+
+		findInterior(center, points, bp, ip);
+
+		cout << "__________________________" << endl;
+		cout << ip.size() << endl;
+		for(auto p : ip) {
+			cout << p.x << " " << p.y << endl;
+		}
 	}
 
 };

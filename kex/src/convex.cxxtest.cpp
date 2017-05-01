@@ -42,7 +42,7 @@ public:
 		Point c(0, 0.4);
 		TS_ASSERT_EQUALS(pointInTriangle(x, y, z, a), true);
 		TS_ASSERT_EQUALS(pointInTriangle(x, y, z, b), false);
-		TS_ASSERT_EQUALS(pointInTriangle(x, y, z, c), false);
+		TS_ASSERT_EQUALS(pointInTriangle(x, y, z, c), true);
 	}
 
 	void testPointInTriangleBoundries() {
@@ -54,16 +54,18 @@ public:
 		Point y(1,0); // on edge
 		Point z(2,0); // on corner
 
-		TS_ASSERT_EQUALS(pointInTriangle(a, b, c, x), false); // ccw
-		TS_ASSERT_EQUALS(pointInTriangle(a, c, b, y), false); // cw
-		TS_ASSERT_EQUALS(pointInTriangle(a, b, c, z), false); // corner
-		TS_ASSERT_EQUALS(pointInTriangle(a, c, b, z), false); // corner
+		TS_ASSERT_EQUALS(pointInTriangle(a, b, c, x), true); // ccw
+		TS_ASSERT_EQUALS(pointInTriangle(a, c, b, y), true); // cw
+		TS_ASSERT_EQUALS(pointInTriangle(a, b, c, z), true); // corner
+		TS_ASSERT_EQUALS(pointInTriangle(a, c, b, z), true); // corner
 	}
 
 	void testFindCenter() {
 		int n = 10;
 		vector <Point> v; // input points
 		v.reserve(n);
+
+		vector<Point> bp;
 
 		Point center(0, 0);
 		Point x(0, 0);
@@ -76,7 +78,7 @@ public:
 		v.push_back(z);
 		v.push_back(h);
 
-		center = findCenter(v, center);
+		findCenter(v, bp, center);
 		TS_ASSERT_EQUALS(center.x, 1.5);
 		TS_ASSERT_EQUALS(center.y, 0.5);
 	}
@@ -90,6 +92,8 @@ public:
 		vector<Point> p2;
 		vector<Point> p3;
 		vector<Point> p4;
+		vector<Point> bp;
+
 
 		Point center(0, 0);
 		Point x(0, 0);
@@ -102,7 +106,7 @@ public:
 		v.push_back(z);
 		v.push_back(h);
 
-		center = findCenter(v, center);
+		findCenter(v, bp, center);
 
 		quadrantPartition(p1, p2, p3, p4, v, center);
 
@@ -122,6 +126,7 @@ public:
 		vector<Point> p3;
 		vector<Point> p4;
 		vector<Point> ep;
+		vector<Point> bp;
 
 		Point center(0, 0);
 		Point x(0, 0);
@@ -134,7 +139,7 @@ public:
 		v.push_back(z);
 		v.push_back(h);
 
-		center = findCenter(v, center);
+		findCenter(v, bp, center);
 
 		quadrantPartition(p1, p2, p3, p4, v, center);
 
@@ -247,10 +252,10 @@ public:
 
 		pointSetSubtraction(points, bp, ip);
 
-		cout << points.size() << endl;
-		for(auto p : points) {
-			cout << p.x << " " << p.y << endl;
-		}
+		//cout << points.size() << endl;
+		//for(auto p : points) {
+		//	cout << p.x << " " << p.y << endl;
+		//}
 	}
 
 	void testInteriorPoints() {
@@ -288,11 +293,48 @@ public:
 
 		findInterior(center, points, bp, ip);
 
-		cout << "__________________________" << endl;
-		cout << ip.size() << endl;
-		for(auto p : ip) {
-			cout << p.x << " " << p.y << endl;
-		}
+		//cout << "__________________________" << endl;
+		//cout << ip.size() << endl;
+		//for(auto p : ip) {
+		//	cout << p.x << " " << p.y << endl;
+		//}
+	}
+
+	void testOrthantScan() {
+		cout << "ORTHANT SCAN" << endl;
+
+		vector<Point> points;
+
+		Point a(-0.02222276248244826, -0.4979727817680433);
+		Point b(-0.4285431913366012, 0.4745826469497594);
+		Point c(0.3105396575392593, 0.2400179190933871);
+		Point d(-0.01883958887200765, 0.3630260628303755);
+		Point e(0.3790312361708201, 0.3779794437605696);
+		Point f(-0.2994955874043476, 0.3776609263174803);
+		Point g(0.3471817493878135, 0.08365533089605659);
+		Point h(-0.00485819764887746, 0.3482682405489201);
+		Point i(0.3443122672329771, -0.1437312230875075);
+		Point j(0.309330780347186, -0.07758103877080702);
+
+		/*
+		-0.02222276248244826 -0.4979727817680433
+		-0.4285431913366012 0.4745826469497594
+		0.3790312361708201 0.3779794437605696
+		0.3443122672329771 -0.1437312230875075
+		*/
+
+		points.push_back(a);
+		points.push_back(b);
+		points.push_back(c);
+		points.push_back(d);
+		points.push_back(e);
+		points.push_back(f);
+		points.push_back(g);
+		points.push_back(h);
+		points.push_back(i);
+		points.push_back(j);
+
+		orthantScan(points);
 	}
 
 };

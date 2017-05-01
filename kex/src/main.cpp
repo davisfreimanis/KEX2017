@@ -1,19 +1,24 @@
+#include <sstream>
+#include <iostream>
+#include <vector>
+#include <stack>
+#include <algorithm>
+
 #include "point.h"
 #include "orthant_scan.h"
 #include "graham_scan.h"
-#include <iostream> // std::cout, std::endl
-#include <vector> // std::vector
-#include <algorithm> // std::sort, std::set_intersection
 
 using namespace std;
 
 int main() {
+	cout << "ORTHANT SCAN" << endl;
 
 	int n;
-	int x;
-	int y;
+	double x;
+	double y;
 	while(cin >> n) {
 		if(n == 0) {
+			cout << "No points" << endl;
 			break;
 		}
 		vector<Point> points;
@@ -24,25 +29,15 @@ int main() {
 			points.push_back(a);
 		}
 
-		// remove duplicate points
-		sort(points.begin(), points.end());
-		points.erase(unique(points.begin(), points.end()), points.end());
-
-		if(points.size() < 3) {
-			cout << points.size() << endl;
-			for (int i = 0; i < points.size(); ++i) {
-				cout << points[i].x << " " << points[i].y << endl;
-			}
-		} else {
-			vector<Point> hull = grahamScan(&points[0], points.size());
-			cout << hull.size() << endl;
-
-			for (int i = 0; i < hull.size(); ++i) {
-				cout << hull[i].x << " " << hull[i].y << endl;
-			}
-
+		for(auto p : points) {
+			cout << p.x << " " << p.y << endl;
 		}
 
+		orthantScan(points);
+
+		// remove duplicate points
+		// sort(points.begin(), points.end());
+		// points.erase(unique(points.begin(), points.end()), points.end());
 	}
 
 	/*

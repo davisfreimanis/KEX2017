@@ -161,18 +161,25 @@ void findInterior(Point center, vector<Point> &points, vector<Point> &bp, vector
 	Point last = bp[bp.size()-1];
 	bool found = false;
 
-	for(auto p : points) {
+	for(auto it = points.begin(); it != points.end();) {
 		found = false;
 		for(unsigned int i = 0; i < bp.size()-1; i++) {
-			if(pointInTriangle(center, bp[i], bp[i+1], p)) {
-				ip.push_back(p);
+			if(pointInTriangle(center, bp[i], bp[i+1], *it)) {
+				//it = points.erase(it);
+				ip.push_back(*it);
+				it++;
 				found = true;
 				break;
 			}
 		}
-		if(!found && pointInTriangle(center, first, last, p)) {
-			ip.push_back(p);
+		if(!found && pointInTriangle(center, first, last, *it)) {
+			//it = points.erase(it);
+			ip.push_back(*it);
+			it++;
 			continue;
+		}
+		if(!found) {
+			it++;
 		}
 	}
 }
@@ -206,8 +213,8 @@ void pointSetSubtraction(vector<Point> &points, vector<Point> &bp, vector<Point>
 
 void orthantScan(vector<Point> &points) {
 	typedef std::chrono::high_resolution_clock Clock;
-	auto t1;
-	auto t2;
+	auto t1 = Clock::now();
+	auto t2 = Clock::now();
 
 	vector<Point> bp;
 	vector<Point> ep;

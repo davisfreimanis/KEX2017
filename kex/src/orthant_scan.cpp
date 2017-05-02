@@ -1,10 +1,12 @@
 #include "point.h"
 #include "orthant_scan.h"
 #include "graham_scan.h"
+#include <ctime>
 #include <iostream> // std::cout, std::endl
 #include <vector> // std::vector
 #include <algorithm> // std::sort, std::set_intersection
 #include <math.h>
+#include <chrono>
 
 using namespace std;
 
@@ -109,18 +111,15 @@ void maxOrthantPointsHelper(vector<Point> &points, vector<Point> &ep) {
 	}
 
 	if(x) {
-		cout << "(" << curX.x << ") pushed back max X" << endl;
 		ep.push_back(curX);
 	}
 
 	if(y) {
-		cout << "(" << curY.x << ") pushed back max Y" << endl;
 		ep.push_back(curY);
 	}
 
 	if(eucl) {
 		for(auto p : curEucl) {
-			cout << "(" << p.x << ") pushed back max eucl" << endl;
 			ep.push_back(p);
 		}
 	}
@@ -131,31 +130,15 @@ void maxOrthantPointsHelper(vector<Point> &points, vector<Point> &ep) {
  */
 void maxOrthantPoints(vector<Point> &p1, vector<Point> &p2, vector<Point> &p3, vector<Point> &p4, vector<Point> &ep) {
 	if(p1.size() > 0) {
-		cout << "P1: " << p1.size() << endl;
-		for(auto p : p1) {
-			cout << p.x << " " << p.y << endl;
-		}
 		maxOrthantPointsHelper(p1, ep);
 	}
 	if(p2.size() > 0) {
-		cout << "P2: " << p2.size() << endl;
-		for(auto p : p2) {
-			cout << p.x << " " << p.y << endl;
-		}
 		maxOrthantPointsHelper(p2, ep);
 	}
 	if(p3.size() > 0) {
-		cout << "P3: " << p3.size() << endl;
-		for(auto p : p3) {
-			cout << p.x << " " << p.y << endl;
-		}
 		maxOrthantPointsHelper(p3, ep);
 	}
 	if(p4.size() > 0) {
-		cout << "P4: " << p4.size() << endl;
-		for(auto p : p4) {
-			cout << p.x << " " << p.y << endl;
-		}
 		maxOrthantPointsHelper(p4, ep);
 	}
 }
@@ -180,7 +163,7 @@ void findInterior(Point center, vector<Point> &points, vector<Point> &bp, vector
 
 	for(auto p : points) {
 		found = false;
-		for(int i = 0; i < bp.size()-1; i++) {
+		for(unsigned int i = 0; i < bp.size()-1; i++) {
 			if(pointInTriangle(center, bp[i], bp[i+1], p)) {
 				ip.push_back(p);
 				found = true;
@@ -193,6 +176,8 @@ void findInterior(Point center, vector<Point> &points, vector<Point> &bp, vector
 		}
 	}
 }
+
+
 
 /*
  * Calculates the final set of points after the round
@@ -216,11 +201,14 @@ void pointSetSubtraction(vector<Point> &points, vector<Point> &bp, vector<Point>
 	std::set_difference(res.begin(), res.end(), ip.begin(), ip.end(),
 						std::inserter(points, points.end()));
 
-	//bp.clear();
 	ip.clear();
 }
 
 void orthantScan(vector<Point> &points) {
+	typedef std::chrono::high_resolution_clock Clock;
+	auto t1;
+	auto t2;
+
 	vector<Point> bp;
 	vector<Point> ep;
 	vector<Point> ip;
@@ -234,44 +222,64 @@ void orthantScan(vector<Point> &points) {
 
 	while (points.size() > 0) {
 		Point oldCenter = center;
+
+		t1 = Clock::now();
 		findCenter(points, bp, center);
+		t2 = Clock::now();
+		std::cout << "FindCenter: "
+				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+				  << " ms" << std::endl;
 
 		double dx = center.x - oldCenter.x;
 		double dy = center.y - oldCenter.y;
 
+
+		t1 = Clock::now();
 		adjustCoordinates(points, bp, dx, dy);
+		t2 = Clock::now();
+		std::cout << "AdjustCoordinates: "
+				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+				  << " ms" << std::endl;
+
+		t1 = Clock::now();
 		quadrantPartition(p1, p2, p3, p4, points, center);
+		t2 = Clock::now();
+		std::cout << "QuadrantPartition: "
+				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+				  << " ms" << std::endl;
+
+		t1 = Clock::now();
 		maxOrthantPoints(p1, p2, p3, p4, ep);
-		cout << "*****************Extreme: " << ep.size() << endl;
+		t2 = Clock::now();
+		std::cout << "MaxOrthantPoints: "
+				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+				  << " ms" << std::endl;
 
-		for(auto p : ep) {
-			cout << p.x << " " << p.y << endl;
-		}
+		t1 = Clock::now();
 		grahamScan(points, bp);
-		cout << "*****************Border: " << bp.size() << endl;
+		t2 = Clock::now();
+		std::cout << "GrahamScan: "
+				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+				  << " ms" << std::endl;
 
-		for(auto p : bp) {
-			cout << p.x << " " << p.y << endl;
-		}
-
+		t1 = Clock::now();
 		findInterior(center, points, bp, ip);
-		cout << "******************Interior: " << ip.size() << endl;
+		t2 = Clock::now();
+		std::cout << "FindInterior: "
+				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+				  << " ms" << std::endl;
 
-		for(auto p : ip) {
-			cout << p.x << " " << p.y << endl;
-		}
-
+		t1 = Clock::now();
 		pointSetSubtraction(points, bp, ip);
-		cout << "*******************Points " << points.size() << endl;
-
-		for(auto p : points) {
-			cout << p.x << " " << p.y << endl;
-		}
+		t2 = Clock::now();
+		std::cout << "PointSetSubtraction: "
+				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+				  << " ms" << std::endl;
 	}
 
 
-	cout << "***************FINAL size: " << bp.size() << endl;
-	for(auto p : bp) {
+	cout << "Size: " << bp.size() << endl;
+	/*for(auto p : bp) {
 		cout << p.x << " " << p.y << endl;
-	}
+	}*/
 }

@@ -3,7 +3,6 @@ FLAGS = -pedantic -Wall -std=c++11 -g
 
 main.out: main.cpp orthant_scan.o point.o graham_scan.o
 	$(CC) $(FLAGS) $^ -o $@
-	./main.out
 
 point.o: point.cpp
 	$(CC) $(FLAGS) -c $^

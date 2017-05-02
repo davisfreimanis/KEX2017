@@ -25,15 +25,13 @@ int main() {
 		points.reserve(n);
 		for (int i = 0; i < n; ++i) {
 			cin >> x >> y;
-			Point a(x,y);
-			points.push_back(a);
-		}
-
-		for(auto p : points) {
-			cout << p.x << " " << p.y << endl;
+			points.push_back(Point(x,y));
 		}
 
 		orthantScan(points);
+		//vector<Point> bp;
+		//grahamScan(points, bp);
+		//cout << bp.size() << endl;
 
 		// remove duplicate points
 		// sort(points.begin(), points.end());

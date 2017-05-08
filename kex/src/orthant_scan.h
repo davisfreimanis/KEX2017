@@ -14,8 +14,7 @@ void adjustCoordinates(vector<Point> &points, vector<Point> &bp, double dx, doub
 void quadrantPartition(vector<Point> &p1, vector<Point> &p2, vector<Point> &p3, vector<Point> &p4, vector<Point> &points, Point c);
 void maxOrthantPoints(vector<Point> &p1, vector<Point> &p2, vector<Point> &p3, vector<Point> &p4, vector<Point> &ep);
 void maxOrthantPointsHelper(vector<Point> &points, vector<Point> &ep);
-void findInterior(Point center, vector<Point> &points, vector<Point> &bp, vector<Point> &ip);
-void pointSetSubtraction(vector<Point> &points, vector<Point> &bp, vector<Point> &ip);
-void orthantScan(vector<Point> &points);
+void findOuter(Point center, vector<Point> &points, vector<Point> &bp, vector<Point> &ip);
+vector<Point> orthantScan(vector<Point> &points);
 
 #endif //KEX2017_ORTHANT_SCAN_H

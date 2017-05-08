@@ -2,11 +2,8 @@
 #include "orthant_scan.h"
 #include "graham_scan.h"
 #include <ctime>
-#include <iostream> // std::cout, std::endl
-#include <vector> // std::vector
-#include <algorithm> // std::sort, std::set_intersection
-#include <math.h>
 #include <chrono>
+
 
 using namespace std;
 
@@ -75,8 +72,17 @@ void maxOrthantPointsHelper(vector<Point> &points, vector<Point> &ep) {
 	bool eucl = false;
 
 	for(auto p : points) {
+		// first point
+		if(!eucl) {
+			curX = p;
+			curY = p;
+			curEucl.push_back(p);
+			eucl = true;
+			x = false;
+			y = false;
 
-		if(!eucl || (pow(p.x, 2) + pow(p.y, 2) == pow(curEucl[0].x, 2) + pow(curEucl[0].y, 2))) {
+		// If the euclidian distance is the same as the current max euclidian distance point
+		} else if( ((pow(p.x, 2) + pow(p.y, 2)) == (pow(curEucl[0].x, 2) + pow(curEucl[0].y, 2)) )) {
 			if(pow(p.x,2) >= pow(curX.x, 2)) {
 				curX = p;
 				x = false;
@@ -85,10 +91,10 @@ void maxOrthantPointsHelper(vector<Point> &points, vector<Point> &ep) {
 				curY = p;
 				y = false;
 			}
-
 			curEucl.push_back(p);
 			eucl = true;
-		} else if(!eucl || (pow(p.x, 2) + pow(p.y, 2) > pow(curEucl[0].x, 2) + pow(curEucl[0].y, 2))) {
+		// If larger euclidian distance
+		} else if( ((pow(p.x, 2) + pow(p.y, 2)) > (pow(curEucl[0].x, 2) + pow(curEucl[0].y, 2)) )) {
 			if(pow(p.x,2) >= pow(curX.x, 2)) {
 				curX = p;
 				x = false;
@@ -101,10 +107,12 @@ void maxOrthantPointsHelper(vector<Point> &points, vector<Point> &ep) {
 			curEucl.clear();
 			curEucl.push_back(p);
 			eucl = true;
-		} else if(pow(p.x, 2) > pow(curX.x, 2) || (pow(p.x, 2) == pow(curX.x, 2) && pow(p.y, 2) > pow(curX.y, 2))) {
+		// Check larger x coordinate
+		} else if(pow(p.x, 2) > pow(curX.x, 2) || ((pow(p.x, 2) == pow(curX.x, 2) && pow(p.y, 2) > pow(curX.y, 2)) )) {
 			curX = p;
 			x = true;
-		} else if(pow(p.y, 2) > pow(curX.y, 2) || (pow(p.y, 2) == pow(curX.y, 2) && pow(p.x, 2) > pow(curX.x, 2))) {
+		// Check larger y coordinate
+		} else if(pow(p.y, 2) > pow(curY.y, 2) || ((pow(p.y, 2) == pow(curX.y, 2) && pow(p.x, 2) > pow(curX.x, 2)) )) {
 			curY = p;
 			y = true;
 		}
@@ -156,17 +164,18 @@ bool pointInTriangle(Point a, Point b, Point c, Point p) {
 	return s >= 0 && t >= 0 && 1-s-t >= 0;
 }
 
-void findInterior(Point center, vector<Point> &points, vector<Point> &bp, vector<Point> &ip) {
+void findOuter(Point center, vector<Point> &points, vector<Point> &bp, vector<Point> &ip) {
 	Point first = bp[0];
 	Point last = bp[bp.size()-1];
-	bool found = false;
+	bool found;
+	unsigned long counter = 0;
 
 	for(auto it = points.begin(); it != points.end();) {
 		found = false;
 		for(unsigned int i = 0; i < bp.size()-1; i++) {
 			if(pointInTriangle(center, bp[i], bp[i+1], *it)) {
 				//it = points.erase(it);
-				ip.push_back(*it);
+				//ip.push_back(*it);
 				it++;
 				found = true;
 				break;
@@ -174,47 +183,26 @@ void findInterior(Point center, vector<Point> &points, vector<Point> &bp, vector
 		}
 		if(!found && pointInTriangle(center, first, last, *it)) {
 			//it = points.erase(it);
-			ip.push_back(*it);
+			//ip.push_back(*it);
 			it++;
 			continue;
 		}
 		if(!found) {
 			it++;
+			counter++;
+			ip.push_back(*it);
 		}
 	}
+	// Resize the size of the outer points
+	ip.resize(counter);
 }
 
-
-
-/*
- * Calculates the final set of points after the round
- * p <- p - bp - ip
- */
-void pointSetSubtraction(vector<Point> &points, vector<Point> &bp, vector<Point> &ip) {
-	vector<Point> res;
-
-	sort(points.begin(), points.end());
-	sort(bp.begin(), bp.end());
-
-	// res <- p - bp
-	std::set_difference(points.begin(), points.end(), bp.begin(), bp.end(),
-						std::inserter(res, res.end()));
-
-	sort(res.begin(), res.end());
-	sort(ip.begin(), ip.end());
-	points.clear();
-
-	// p <- res - ip
-	std::set_difference(res.begin(), res.end(), ip.begin(), ip.end(),
-						std::inserter(points, points.end()));
-
-	ip.clear();
-}
-
-void orthantScan(vector<Point> &points) {
+vector<Point> orthantScan(vector<Point> &points) {
 	typedef std::chrono::high_resolution_clock Clock;
 	auto t1 = Clock::now();
 	auto t2 = Clock::now();
+	auto beg = Clock::now();
+	auto end = Clock::now();
 
 	vector<Point> bp;
 	vector<Point> ep;
@@ -240,13 +228,13 @@ void orthantScan(vector<Point> &points) {
 		double dx = center.x - oldCenter.x;
 		double dy = center.y - oldCenter.y;
 
-
 		t1 = Clock::now();
 		adjustCoordinates(points, bp, dx, dy);
 		t2 = Clock::now();
 		std::cout << "AdjustCoordinates: "
 				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
 				  << " ms" << std::endl;
+
 
 		t1 = Clock::now();
 		quadrantPartition(p1, p2, p3, p4, points, center);
@@ -263,21 +251,28 @@ void orthantScan(vector<Point> &points) {
 				  << " ms" << std::endl;
 
 		t1 = Clock::now();
-		grahamScan(points, bp);
+		grahamScan(ep, bp);
 		t2 = Clock::now();
 		std::cout << "GrahamScan: "
 				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
 				  << " ms" << std::endl;
 
 		t1 = Clock::now();
-		findInterior(center, points, bp, ip);
+		findOuter(center, points, bp, ip);
+		cout << "IP SIZe: " << ip.size() << endl;
 		t2 = Clock::now();
-		std::cout << "FindInterior: "
+		std::cout << "FindOuter: "
 				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
 				  << " ms" << std::endl;
 
 		t1 = Clock::now();
-		pointSetSubtraction(points, bp, ip);
+		sort(ip.begin(), ip.end());
+		sort(bp.begin(), bp.end());
+		points.clear();
+
+		std::set_difference(ip.begin(), ip.end(), bp.begin(), bp.end(),
+							std::inserter(points, points.end()));
+
 		t2 = Clock::now();
 		std::cout << "PointSetSubtraction: "
 				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
@@ -286,7 +281,15 @@ void orthantScan(vector<Point> &points) {
 
 
 	cout << "Size: " << bp.size() << endl;
-	/*for(auto p : bp) {
-		cout << p.x << " " << p.y << endl;
-	}*/
+
+	end = Clock::now();
+	std::cout << "TOTAL time: "
+			  << std::chrono::duration_cast<std::chrono::milliseconds>(end - beg).count()
+			  << " ms" << std::endl;
+
+
+	return bp;
+	//for(auto p : bp) {
+	//	cout << p.x << " " << p.y << endl;
+	//}
 }

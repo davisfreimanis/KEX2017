@@ -1,58 +1,112 @@
 #include <sstream>
 #include <iostream>
+#include <fstream>
 #include <vector>
-#include <stack>
 #include <algorithm>
-
 #include "point.h"
 #include "orthant_scan.h"
 #include "graham_scan.h"
 
 using namespace std;
 
-int main() {
-	cout << "ORTHANT SCAN" << endl;
-
+void readInput(vector<Point> &points) {
 	int n;
 	double x;
 	double y;
+	string skit;
+	getline(cin, skit);
 	while(cin >> n) {
 		if(n == 0) {
 			cout << "No points" << endl;
 			break;
 		}
-		vector<Point> points;
 		points.reserve(n);
 		for (int i = 0; i < n; ++i) {
 			cin >> x >> y;
 			points.push_back(Point(x,y));
 		}
+	}
+}
 
-		orthantScan(points);
-		//vector<Point> bp;
-		//grahamScan(points, bp);
-		//cout << bp.size() << endl;
+void generateData(vector<Point> &points) {
+	vector<Point> bp;
+	vector<Point> ep;
+	vector<Point> ip;
 
-		// remove duplicate points
-		// sort(points.begin(), points.end());
-		// points.erase(unique(points.begin(), points.end()), points.end());
+	vector<Point> p1;
+	vector<Point> p2;
+	vector<Point> p3;
+	vector<Point> p4;
+
+	Point center(0,0);
+
+	quadrantPartition(p1, p2, p3, p4, points, center);
+	maxOrthantPoints(p1, p2, p3, p4, ep);
+
+	ofstream poi;
+	poi.open("points.dat");
+	for(auto p : points) {
+		poi << p.x << " " << p.y << endl;
 	}
 
-	/*
-	Point a(41,-6);
-	Point b(-24,-74);
-	Point c(-51,-6);
-	Point d(73,17);
-	Point e(-30,-34);
+	poi.close();
 
-	points.push_back(a);
-	points.push_back(b);
-	points.push_back(c);
-	points.push_back(d);
-	points.push_back(e);
-	*/
+	ofstream extreme;
+	extreme.open("extreme.dat");
+
+	for(auto p : ep) {
+		extreme << p.x << " " << p.y << endl;
+	}
+
+	extreme.close();
+	grahamScan(ep, bp);
+	Point end = bp.front();
+	bp.push_back(end);
+	findOuter(center, points, bp, ip);
+	cout << "IP SIZe: " << ip.size() << ip[0].x << endl;
+	ofstream fhull;
+	fhull.open("fhull.dat");
+
+	for(auto p : bp) {
+		fhull << p.x << " " << p.y << endl;
+	}
+
+	fhull.close();
+
+	ofstream outer;
+	outer.open("outer.dat");
+
+	for(auto p : ip) {
+		outer << p.x << " " << p.y << endl;
+	}
+
+	outer.close();
 
 
+	bp.clear();
+	grahamScan(points, bp);
+	end = bp.front();
+	bp.push_back(end);
+
+	ofstream hull;
+	hull.open("hull.dat");
+
+	for(auto p : bp) {
+		hull << p.x << " " << p.y << endl;
+	}
+	hull.close();
+}
+
+int main() {
+	vector<Point> points;
+	vector<Point> bp;
+
+
+	readInput(points);
+	//generateData(points);
+
+	orthantScan(points);
+	//grahamScan(points, bp);
 
     return 0;
 }

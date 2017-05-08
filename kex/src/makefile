@@ -1,4 +1,5 @@
 CC = g++
+GNUPLOT = gnuplot
 FLAGS = -pedantic -Wall -std=c++11 -g
 
 main.out: main.cpp orthant_scan.o point.o graham_scan.o
@@ -23,6 +24,13 @@ test:
 	$(CC) -std=c++11 -c -o graham_scan.o graham_scan.cpp
 	$(CC) -std=c++11 -o convex_test.out -I ../tests/cxxtest/ testrunner.cpp point.o orthant_scan.o graham_scan.o
 	./convex_test.out
+
+points: points.p points.dat extreme.dat hull.dat fhull.dat outer.dat
+	$(GNUPLOT) $<
+
+generate:
+	./rbox D2 5000 > points_1000.dat
+	./main.out < points_1000.dat
 
 clean:
 	rm -f *.o *.out

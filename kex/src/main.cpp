@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
+#include <chrono>
 #include "point.h"
 #include "orthant_scan.h"
 #include "graham_scan.h"
@@ -40,16 +41,34 @@ void generateData(vector<Point> &points) {
 
 	Point center(0,0);
 
-	quadrantPartition(p1, p2, p3, p4, points, center);
-	maxOrthantPoints(p1, p2, p3, p4, ep);
-
+	/*
+	 * ORIGINAL COORDINATES
+	 */
 	ofstream poi;
-	poi.open("points.dat");
+	poi.open("points1.dat");
 	for(auto p : points) {
 		poi << p.x << " " << p.y << endl;
 	}
-
 	poi.close();
+
+	Point oldCenter = center;
+	findCenter(points, bp, center);
+	double dx = center.x - oldCenter.x;
+	double dy = center.y - oldCenter.y;
+
+
+	/*
+	 * ADJUSTED COORDINATES
+	 */
+	adjustCoordinates(points, bp, dx, dy);
+	poi.open("points2.dat");
+	for(auto p : points) {
+		poi << p.x << " " << p.y << endl;
+	}
+	poi.close();
+
+	quadrantPartition(p1, p2, p3, p4, points);
+	maxOrthantPoints(p1, p2, p3, p4, ep);
 
 	ofstream extreme;
 	extreme.open("extreme.dat");
@@ -59,6 +78,8 @@ void generateData(vector<Point> &points) {
 	}
 
 	extreme.close();
+
+	/*
 	grahamScan(ep, bp);
 	Point end = bp.front();
 	bp.push_back(end);
@@ -95,6 +116,7 @@ void generateData(vector<Point> &points) {
 		hull << p.x << " " << p.y << endl;
 	}
 	hull.close();
+	 */
 }
 
 int main() {
@@ -103,10 +125,11 @@ int main() {
 
 
 	readInput(points);
-	//generateData(points);
+	generateData(points);
 
-	orthantScan(points);
+	//orthantScan(points);
 	//grahamScan(points, bp);
+	cout << bp.size() << endl;
 
     return 0;
 }

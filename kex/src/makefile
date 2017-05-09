@@ -1,9 +1,10 @@
 CC = g++
 GNUPLOT = gnuplot
 FLAGS = -pedantic -Wall -std=c++11 -g
+PFLAGS = -fopenmp -lpthread
 
 main.out: main.cpp orthant_scan.o point.o graham_scan.o
-	$(CC) $(FLAGS) $^ -o $@
+	$(CC) $(FLAGS) $(PFLAGS) $^ -o $@
 
 point.o: point.cpp
 	$(CC) $(FLAGS) -c $^
@@ -30,7 +31,7 @@ points: points.p points.dat extreme.dat hull.dat fhull.dat outer.dat
 
 generate:
 	./rbox D2 5000 > points_1000.dat
-	./main.out < points_1000.dat
+	./main.out < data_random.txt
 
 clean:
 	rm -f *.o *.out

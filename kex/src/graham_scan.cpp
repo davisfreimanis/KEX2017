@@ -45,7 +45,7 @@ void grahamScan(vector<Point> &points, vector<Point> &bp) {
 	// find the point having the least y coordinate (pivot),
 	// ties are broken in favor of lower x coordinate
 	int leastY = 0;
-	for (int i = 1; i < points.size(); i++) {
+	for (unsigned int i = 1; i < points.size(); i++) {
 		if (points[i] < points[leastY]) {
 			leastY = i;
 		}
@@ -64,7 +64,7 @@ void grahamScan(vector<Point> &points, vector<Point> &bp) {
 	bp.push_back(points[1]);
 	bp.push_back(points[2]);
 
-	for (int i = 3; i < points.size(); i++) {
+	for (unsigned int i = 3; i < points.size(); i++) {
 		Point top = bp.back();
 		bp.pop_back();
 		while (ccw(bp.back(), top, points[i]) != -1) {

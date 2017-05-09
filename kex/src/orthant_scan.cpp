@@ -4,7 +4,6 @@
 #include <ctime>
 #include <chrono>
 
-
 using namespace std;
 
 /*
@@ -33,11 +32,11 @@ void findCenter(vector<Point> &points, vector<Point> &bp, Point &center) {
  * Adjusts all the coordinates to the new centroid
  */
 void adjustCoordinates(vector<Point> &points, vector<Point> &bp, double dx, double dy) {
-	for(auto p : points) {
+	for(auto &p : points) {
 		p.x -= dx;
 		p.y -= dy;
 	}
-	for(auto p : bp) {
+	for(auto &p : bp) {
 		p.x -= dx;
 		p.y -= dy;
 	}
@@ -46,15 +45,15 @@ void adjustCoordinates(vector<Point> &points, vector<Point> &bp, double dx, doub
 /*
  * Partitions the points in 4 vectors corresponding to each vector
  */
-void quadrantPartition(vector<Point> &p1, vector<Point> &p2, vector<Point> &p3, vector<Point> &p4, vector<Point> &points, Point c) {
+void quadrantPartition(vector<Point> &p1, vector<Point> &p2, vector<Point> &p3, vector<Point> &p4, vector<Point> &points) {
 	for (auto p : points) {
-		if(p.x >= c.x && p.y >= c.y) { // Q1
+		if(p.x >= 0 && p.y >= 0) { // Q1
 			p1.push_back(p);
-		} else if(p.x < c.x && p.y > c.y) { // Q2
+		} else if(p.x < 0 && p.y > 0) { // Q2
 			p2.push_back(p);
-		} else if(p.x <= c.x && p.y <= c.y) { // Q3
+		} else if(p.x <= 0 && p.y <= 0) { // Q3
 			p3.push_back(p);
-		} else if(p.x > c.x && p.y < c.y) { // Q4
+		} else if(p.x > 0 && p.y < 0) { // Q4
 			p4.push_back(p);
 		}
 	}
@@ -83,10 +82,12 @@ void maxOrthantPointsHelper(vector<Point> &points, vector<Point> &ep) {
 
 		// If the euclidian distance is the same as the current max euclidian distance point
 		} else if( ((pow(p.x, 2) + pow(p.y, 2)) == (pow(curEucl[0].x, 2) + pow(curEucl[0].y, 2)) )) {
+			// if point higher x coordinate
 			if(pow(p.x,2) >= pow(curX.x, 2)) {
 				curX = p;
 				x = false;
 			}
+			// if point higher y coordinate
 			if(pow(p.y,2) >= pow(curY.y, 2)) {
 				curY = p;
 				y = false;
@@ -118,11 +119,11 @@ void maxOrthantPointsHelper(vector<Point> &points, vector<Point> &ep) {
 		}
 	}
 
-	if(x) {
+	if(x || curX.x > curEucl[0].x) {
 		ep.push_back(curX);
 	}
 
-	if(y) {
+	if(y || curY.y > curEucl[0].y) {
 		ep.push_back(curY);
 	}
 
@@ -174,19 +175,16 @@ void findOuter(Point center, vector<Point> &points, vector<Point> &bp, vector<Po
 		found = false;
 		for(unsigned int i = 0; i < bp.size()-1; i++) {
 			if(pointInTriangle(center, bp[i], bp[i+1], *it)) {
-				//it = points.erase(it);
-				//ip.push_back(*it);
 				it++;
 				found = true;
 				break;
 			}
 		}
 		if(!found && pointInTriangle(center, first, last, *it)) {
-			//it = points.erase(it);
-			//ip.push_back(*it);
 			it++;
 			continue;
 		}
+		// point not in convex polygon. Add to outer points ip
 		if(!found) {
 			it++;
 			counter++;
@@ -203,6 +201,7 @@ vector<Point> orthantScan(vector<Point> &points) {
 	auto t2 = Clock::now();
 	auto beg = Clock::now();
 	auto end = Clock::now();
+	bool debug = true;
 
 	vector<Point> bp;
 	vector<Point> ep;
@@ -216,14 +215,18 @@ vector<Point> orthantScan(vector<Point> &points) {
 	Point center(0,0);
 
 	while (points.size() > 0) {
+
 		Point oldCenter = center;
 
+		/*
 		t1 = Clock::now();
 		findCenter(points, bp, center);
 		t2 = Clock::now();
-		std::cout << "FindCenter: "
-				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
-				  << " ms" << std::endl;
+		if(debug) {
+			std::cout << "FindCenter: "
+					  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+					<< " ms" << std::endl;
+		}
 
 		double dx = center.x - oldCenter.x;
 		double dy = center.y - oldCenter.y;
@@ -231,39 +234,49 @@ vector<Point> orthantScan(vector<Point> &points) {
 		t1 = Clock::now();
 		adjustCoordinates(points, bp, dx, dy);
 		t2 = Clock::now();
-		std::cout << "AdjustCoordinates: "
-				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
-				  << " ms" << std::endl;
+		if(debug) {
+			std::cout << "AdjustCoordinates: "
+					  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+					<< " ms" << std::endl;
+		}
 
+		 */
 
 		t1 = Clock::now();
-		quadrantPartition(p1, p2, p3, p4, points, center);
+		quadrantPartition(p1, p2, p3, p4, points);
 		t2 = Clock::now();
-		std::cout << "QuadrantPartition: "
-				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
-				  << " ms" << std::endl;
+		if(debug) {
+			std::cout << "QuadrantPartition: "
+					  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+					<< " ms" << std::endl;
+		}
 
 		t1 = Clock::now();
 		maxOrthantPoints(p1, p2, p3, p4, ep);
 		t2 = Clock::now();
-		std::cout << "MaxOrthantPoints: "
-				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
-				  << " ms" << std::endl;
+		if(debug) {
+			std::cout << "MaxOrthantPoints: "
+					  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+					<< " ms" << std::endl;
+		}
 
 		t1 = Clock::now();
 		grahamScan(ep, bp);
 		t2 = Clock::now();
-		std::cout << "GrahamScan: "
-				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
-				  << " ms" << std::endl;
+		if(debug) {
+			std::cout << "GrahamScan: "
+					  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+					<< " ms" << std::endl;
+		}
 
 		t1 = Clock::now();
 		findOuter(center, points, bp, ip);
-		cout << "IP SIZe: " << ip.size() << endl;
 		t2 = Clock::now();
-		std::cout << "FindOuter: "
-				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
-				  << " ms" << std::endl;
+		if(debug) {
+			std::cout << "FindOuter: "
+					  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+					<< " ms" << std::endl;
+		}
 
 		t1 = Clock::now();
 		sort(ip.begin(), ip.end());
@@ -274,9 +287,17 @@ vector<Point> orthantScan(vector<Point> &points) {
 							std::inserter(points, points.end()));
 
 		t2 = Clock::now();
-		std::cout << "PointSetSubtraction: "
-				  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
-				  << " ms" << std::endl;
+		if(debug) {
+			std::cout << "PointSetSubtraction: "
+					  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+					<< " ms" << std::endl;
+		}
+
+		cout << "POINTS: " << points.size() << endl;
+		for(auto p : points) {
+			cout << p.x << " " << p.y << endl;
+		}
+
 	}
 
 

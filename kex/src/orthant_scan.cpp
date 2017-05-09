@@ -3,6 +3,7 @@
 #include "graham_scan.h"
 #include <ctime>
 #include <chrono>
+#include <fstream>
 
 using namespace std;
 
@@ -165,7 +166,7 @@ bool pointInTriangle(Point a, Point b, Point c, Point p) {
 	return s >= 0 && t >= 0 && 1-s-t >= 0;
 }
 
-void findOuter(Point center, vector<Point> &points, vector<Point> &bp, vector<Point> &ip) {
+void findOuter(vector<Point> &points, vector<Point> &bp, vector<Point> &ip) {
 	Point first = bp[0];
 	Point last = bp[bp.size()-1];
 	bool found;
@@ -174,25 +175,29 @@ void findOuter(Point center, vector<Point> &points, vector<Point> &bp, vector<Po
 	for(auto it = points.begin(); it != points.end();) {
 		found = false;
 		for(unsigned int i = 0; i < bp.size()-1; i++) {
-			if(pointInTriangle(center, bp[i], bp[i+1], *it)) {
+			if(pointInTriangle(Point(0,0), bp[i], bp[i+1], *it)) {
 				it++;
 				found = true;
 				break;
 			}
 		}
-		if(!found && pointInTriangle(center, first, last, *it)) {
+		if(!found && pointInTriangle(Point(0,0), first, last, *it)) {
 			it++;
 			continue;
 		}
 		// point not in convex polygon. Add to outer points ip
 		if(!found) {
+			cout << "Outer: "<< (*it).x << " " << (*it).y << endl;
+			double xt = (*it).x;
+			double yt = (*it).y;
+			Point temp(xt, yt);
 			it++;
 			counter++;
-			ip.push_back(*it);
+			ip.push_back(temp);
 		}
 	}
 	// Resize the size of the outer points
-	ip.resize(counter);
+	//ip.resize(counter);
 }
 
 vector<Point> orthantScan(vector<Point> &points) {
@@ -201,7 +206,7 @@ vector<Point> orthantScan(vector<Point> &points) {
 	auto t2 = Clock::now();
 	auto beg = Clock::now();
 	auto end = Clock::now();
-	bool debug = true;
+	bool debug = false;
 
 	vector<Point> bp;
 	vector<Point> ep;
@@ -215,10 +220,9 @@ vector<Point> orthantScan(vector<Point> &points) {
 	Point center(0,0);
 
 	while (points.size() > 0) {
-
+		cout << "Remaining points: " << points.size() << endl;
 		Point oldCenter = center;
 
-		/*
 		t1 = Clock::now();
 		findCenter(points, bp, center);
 		t2 = Clock::now();
@@ -240,8 +244,6 @@ vector<Point> orthantScan(vector<Point> &points) {
 					<< " ms" << std::endl;
 		}
 
-		 */
-
 		t1 = Clock::now();
 		quadrantPartition(p1, p2, p3, p4, points);
 		t2 = Clock::now();
@@ -260,8 +262,18 @@ vector<Point> orthantScan(vector<Point> &points) {
 					<< " ms" << std::endl;
 		}
 
+		cout << "P1 size: " << p1.size() << endl;
+		cout << "P2 size: " << p2.size() << endl;
+		cout << "P3 size: " << p3.size() << endl;
+		cout << "P4 size: " << p4.size() << endl;
+		cout << "EP size: " << ep.size() << endl;
+
 		t1 = Clock::now();
+		ep.insert(ep.end(), bp.begin(), bp.end());
+		bp.clear();
+
 		grahamScan(ep, bp);
+
 		t2 = Clock::now();
 		if(debug) {
 			std::cout << "GrahamScan: "
@@ -270,7 +282,9 @@ vector<Point> orthantScan(vector<Point> &points) {
 		}
 
 		t1 = Clock::now();
-		findOuter(center, points, bp, ip);
+		findOuter(points, bp, ip);
+		for(auto p : ip)
+			cout << "Outer first: "<< p.x << " " << p.y << endl;
 		t2 = Clock::now();
 		if(debug) {
 			std::cout << "FindOuter: "
@@ -278,26 +292,31 @@ vector<Point> orthantScan(vector<Point> &points) {
 					<< " ms" << std::endl;
 		}
 
+		cout << "OP size: " << ip.size() << endl;
+		cout << "BP size: " << bp.size() << endl;
+
+
 		t1 = Clock::now();
-		sort(ip.begin(), ip.end());
-		sort(bp.begin(), bp.end());
-		points.clear();
-
-		std::set_difference(ip.begin(), ip.end(), bp.begin(), bp.end(),
-							std::inserter(points, points.end()));
-
+		points.swap(ip);
 		t2 = Clock::now();
 		if(debug) {
-			std::cout << "PointSetSubtraction: "
+			std::cout << "PointSwap: "
 					  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
-					<< " ms" << std::endl;
+					  << " ms" << std::endl;
 		}
 
-		cout << "POINTS: " << points.size() << endl;
+		ip.clear();
+		ep.clear();
+		p1.clear();
+		p2.clear();
+		p3.clear();
+		p4.clear();
+
+		/*
 		for(auto p : points) {
 			cout << p.x << " " << p.y << endl;
 		}
-
+		 */
 	}
 
 
@@ -309,8 +328,12 @@ vector<Point> orthantScan(vector<Point> &points) {
 			  << " ms" << std::endl;
 
 
+
+	ofstream poi;
+	poi.open("hull1.dat");
+	for(auto p : bp) {
+		poi << p.x << " " << p.y << endl;
+	}
+	poi.close();
 	return bp;
-	//for(auto p : bp) {
-	//	cout << p.x << " " << p.y << endl;
-	//}
 }

@@ -41,6 +41,17 @@ void generateData(vector<Point> &points) {
 
 	Point center(0,0);
 
+	grahamScan(points, bp);
+
+	ofstream hull;
+	hull.open("hull.dat");
+
+	for(auto p : bp) {
+		hull << p.x << " " << p.y << endl;
+	}
+	hull.close();
+
+
 	/*
 	 * ORIGINAL COORDINATES
 	 */
@@ -70,21 +81,21 @@ void generateData(vector<Point> &points) {
 	quadrantPartition(p1, p2, p3, p4, points);
 	maxOrthantPoints(p1, p2, p3, p4, ep);
 
-	ofstream extreme;
-	extreme.open("extreme.dat");
+	poi.open("extreme.dat");
 
 	for(auto p : ep) {
-		extreme << p.x << " " << p.y << endl;
+		poi << p.x << " " << p.y << endl;
 	}
 
-	extreme.close();
+	poi.close();
 
-	/*
 	grahamScan(ep, bp);
-	Point end = bp.front();
-	bp.push_back(end);
-	findOuter(center, points, bp, ip);
-	cout << "IP SIZe: " << ip.size() << ip[0].x << endl;
+	//Point end = bp.front();
+	//bp.push_back(end);
+	findOuter(points, bp, ip);
+	cout << "IP SIZe: " << ip.size() << endl;
+	cout << "BP SIZe: " << bp.size() << endl;
+
 	ofstream fhull;
 	fhull.open("fhull.dat");
 
@@ -94,38 +105,27 @@ void generateData(vector<Point> &points) {
 
 	fhull.close();
 
-	ofstream outer;
-	outer.open("outer.dat");
+	poi.open("outer.dat");
 
 	for(auto p : ip) {
-		outer << p.x << " " << p.y << endl;
+		poi << p.x << " " << p.y << endl;
 	}
 
-	outer.close();
+	poi.close();
 
+	points.swap(ip);
 
 	bp.clear();
-	grahamScan(points, bp);
-	end = bp.front();
-	bp.push_back(end);
 
-	ofstream hull;
-	hull.open("hull.dat");
-
-	for(auto p : bp) {
-		hull << p.x << " " << p.y << endl;
-	}
-	hull.close();
-	 */
 }
 
 int main() {
 	vector<Point> points;
 	vector<Point> bp;
 
-
 	readInput(points);
 	generateData(points);
+	//plot "points2.dat" using 1:2, "extreme.dat" using 1:2 lc 7, "fhull.dat" using 1:2 lc 7 pt 7 with linespoints, "outer.dat" using 1:2 lc 6 pt 6
 
 	//orthantScan(points);
 	//grahamScan(points, bp);

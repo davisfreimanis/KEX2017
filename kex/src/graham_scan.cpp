@@ -36,6 +36,7 @@ bool POLAR_ORDER(Point a, Point b) {
 }
 
 void grahamScan(vector<Point> &points, vector<Point> &bp) {
+
 	if (points.size() < 3) {
 		//TODO add only points to bp
 
@@ -60,6 +61,7 @@ void grahamScan(vector<Point> &points, vector<Point> &bp) {
 	pivot = points[0];
 	sort(points.begin()+1, points.end(), POLAR_ORDER);
 
+	// init stack
 	bp.push_back(points[0]);
 	bp.push_back(points[1]);
 	bp.push_back(points[2]);

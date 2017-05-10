@@ -125,13 +125,13 @@ int main() {
 	vector<Point> bp;
 
 	readInput(points);
-	generateData(points);
+	//generateData(points);
 	//plot "points2.dat" using 1:2, "extreme.dat" using 1:2 lc 7, "fhull.dat" using 1:2 lc 7 pt 7 with linespoints, "outer.dat" using 1:2 lc 6 pt 6
 
 	typedef std::chrono::high_resolution_clock Clock;
 	auto t1 = Clock::now();
 
-	//orthantScan(points);
+	orthantScan(points);
 	//grahamScan(points, bp);
 
 	auto t2 = Clock::now();

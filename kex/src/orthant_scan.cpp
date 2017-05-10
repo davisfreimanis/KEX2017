@@ -84,7 +84,8 @@ void maxOrthantPointsHelper(vector<Point> &points, vector<Point> &ep) {
 			y = false;
 
 		// If the euclidian distance is the same as the current max euclidian distance point
-		} else if( abs( ((pow(p.x, 2) + pow(p.y, 2)) - (pow(curEucl[0].x, 2) + pow(curEucl[0].y, 2)) ) < numeric_limits<double>::epsilon() )) {
+		} else if( abs(((pow(p.x, 2) + pow(p.y, 2)) - (pow(curEucl[0].x, 2) + pow(curEucl[0].y, 2)))) < 0.0001/*numeric_limits<double>::epsilon()*/ ) {
+		//} else if(((pow(p.x, 2) + pow(p.y, 2)) == (pow(curEucl[0].x, 2) + pow(curEucl[0].y, 2)) )) {
 			// if point higher x coordinate
 			if(pow(p.x,2) >= pow(curX.x, 2)) {
 				curX = p;

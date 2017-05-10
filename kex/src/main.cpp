@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
+#include <ctime>
 #include <chrono>
 #include "point.h"
 #include "orthant_scan.h"
@@ -127,8 +128,16 @@ int main() {
 	generateData(points);
 	//plot "points2.dat" using 1:2, "extreme.dat" using 1:2 lc 7, "fhull.dat" using 1:2 lc 7 pt 7 with linespoints, "outer.dat" using 1:2 lc 6 pt 6
 
+	typedef std::chrono::high_resolution_clock Clock;
+	auto t1 = Clock::now();
+
 	//orthantScan(points);
 	//grahamScan(points, bp);
+
+	auto t2 = Clock::now();
+	std::cout << "Total time: "
+			  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+			  << " ms" << std::endl;
 	cout << bp.size() << endl;
 
     return 0;

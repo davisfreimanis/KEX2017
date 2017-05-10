@@ -4,6 +4,8 @@
 #include <ctime>
 #include <chrono>
 #include <fstream>
+#include <cmath> // abs
+#include <limits> // epsilon
 
 using namespace std;
 
@@ -82,7 +84,7 @@ void maxOrthantPointsHelper(vector<Point> &points, vector<Point> &ep) {
 			y = false;
 
 		// If the euclidian distance is the same as the current max euclidian distance point
-		} else if( ((pow(p.x, 2) + pow(p.y, 2)) == (pow(curEucl[0].x, 2) + pow(curEucl[0].y, 2)) )) {
+		} else if( abs( ((pow(p.x, 2) + pow(p.y, 2)) - (pow(curEucl[0].x, 2) + pow(curEucl[0].y, 2)) ) < numeric_limits<double>::epsilon() )) {
 			// if point higher x coordinate
 			if(pow(p.x,2) >= pow(curX.x, 2)) {
 				curX = p;
@@ -187,7 +189,6 @@ void findOuter(vector<Point> &points, vector<Point> &bp, vector<Point> &ip) {
 		}
 		// point not in convex polygon. Add to outer points ip
 		if(!found) {
-			cout << "Outer: "<< (*it).x << " " << (*it).y << endl;
 			double xt = (*it).x;
 			double yt = (*it).y;
 			Point temp(xt, yt);
@@ -204,8 +205,6 @@ vector<Point> orthantScan(vector<Point> &points) {
 	typedef std::chrono::high_resolution_clock Clock;
 	auto t1 = Clock::now();
 	auto t2 = Clock::now();
-	auto beg = Clock::now();
-	auto end = Clock::now();
 	bool debug = false;
 
 	vector<Point> bp;
@@ -220,7 +219,6 @@ vector<Point> orthantScan(vector<Point> &points) {
 	Point center(0,0);
 
 	while (points.size() > 0) {
-		cout << "Remaining points: " << points.size() << endl;
 		Point oldCenter = center;
 
 		t1 = Clock::now();
@@ -262,12 +260,6 @@ vector<Point> orthantScan(vector<Point> &points) {
 					<< " ms" << std::endl;
 		}
 
-		cout << "P1 size: " << p1.size() << endl;
-		cout << "P2 size: " << p2.size() << endl;
-		cout << "P3 size: " << p3.size() << endl;
-		cout << "P4 size: " << p4.size() << endl;
-		cout << "EP size: " << ep.size() << endl;
-
 		t1 = Clock::now();
 		ep.insert(ep.end(), bp.begin(), bp.end());
 		bp.clear();
@@ -283,18 +275,12 @@ vector<Point> orthantScan(vector<Point> &points) {
 
 		t1 = Clock::now();
 		findOuter(points, bp, ip);
-		for(auto p : ip)
-			cout << "Outer first: "<< p.x << " " << p.y << endl;
 		t2 = Clock::now();
 		if(debug) {
 			std::cout << "FindOuter: "
 					  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
 					<< " ms" << std::endl;
 		}
-
-		cout << "OP size: " << ip.size() << endl;
-		cout << "BP size: " << bp.size() << endl;
-
 
 		t1 = Clock::now();
 		points.swap(ip);
@@ -321,11 +307,6 @@ vector<Point> orthantScan(vector<Point> &points) {
 
 
 	cout << "Size: " << bp.size() << endl;
-
-	end = Clock::now();
-	std::cout << "TOTAL time: "
-			  << std::chrono::duration_cast<std::chrono::milliseconds>(end - beg).count()
-			  << " ms" << std::endl;
 
 
 

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <cmath> // abs
 #include <limits> // epsilon
+#include "omp.h"
 
 using namespace std;
 
@@ -142,17 +143,36 @@ void maxOrthantPointsHelper(vector<Point> &points, vector<Point> &ep) {
  * Calls quadrantPartitionHelper for each quadrant to populate quadrant vectors
  */
 void maxOrthantPoints(vector<Point> &p1, vector<Point> &p2, vector<Point> &p3, vector<Point> &p4, vector<Point> &ep) {
-	if(p1.size() > 0) {
-		maxOrthantPointsHelper(p1, ep);
-	}
-	if(p2.size() > 0) {
-		maxOrthantPointsHelper(p2, ep);
-	}
-	if(p3.size() > 0) {
-		maxOrthantPointsHelper(p3, ep);
-	}
-	if(p4.size() > 0) {
-		maxOrthantPointsHelper(p4, ep);
+	//#pragma omp parallel sections
+	{
+		//#pragma omp section
+		{
+			if(p1.size() > 0) {
+				maxOrthantPointsHelper(p1, ep);
+			}
+		}
+
+		//#pragma omp section
+		{
+			if (p2.size() > 0) {
+				maxOrthantPointsHelper(p2, ep);
+
+			}
+		}
+
+		//#pragma omp section
+		{
+			if (p3.size() > 0) {
+				maxOrthantPointsHelper(p3, ep);
+			}
+		}
+
+		//#pragma omp section
+		{
+			if (p4.size() > 0) {
+				maxOrthantPointsHelper(p4, ep);
+			}
+		}
 	}
 }
 
@@ -175,17 +195,17 @@ void findOuter(vector<Point> &points, vector<Point> &bp, vector<Point> &ip) {
 	bool found;
 	unsigned long counter = 0;
 
-	for(auto it = points.begin(); it != points.end();) {
+	for(auto it = points.begin(); it != points.end(); it++) {
 		found = false;
 		for(unsigned int i = 0; i < bp.size()-1; i++) {
 			if(pointInTriangle(Point(0,0), bp[i], bp[i+1], *it)) {
-				it++;
+				//it++;
 				found = true;
 				break;
 			}
 		}
 		if(!found && pointInTriangle(Point(0,0), first, last, *it)) {
-			it++;
+			//it++;
 			continue;
 		}
 		// point not in convex polygon. Add to outer points ip
@@ -193,7 +213,7 @@ void findOuter(vector<Point> &points, vector<Point> &bp, vector<Point> &ip) {
 			double xt = (*it).x;
 			double yt = (*it).y;
 			Point temp(xt, yt);
-			it++;
+			//it++;
 			counter++;
 			ip.push_back(temp);
 		}
@@ -207,6 +227,10 @@ vector<Point> orthantScan(vector<Point> &points) {
 	auto t1 = Clock::now();
 	auto t2 = Clock::now();
 	bool debug = false;
+	int iterations = 0;
+	auto totalOrtantPoints = 0;
+	auto totalGrahamScan = 0;
+	auto totalFindOuter = 0;
 
 	vector<Point> bp;
 	vector<Point> ep;
@@ -260,6 +284,7 @@ vector<Point> orthantScan(vector<Point> &points) {
 					  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
 					<< " ms" << std::endl;
 		}
+		totalOrtantPoints += chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
 
 		t1 = Clock::now();
 		ep.insert(ep.end(), bp.begin(), bp.end());
@@ -273,6 +298,7 @@ vector<Point> orthantScan(vector<Point> &points) {
 					  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
 					<< " ms" << std::endl;
 		}
+		totalGrahamScan += chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
 
 		t1 = Clock::now();
 		findOuter(points, bp, ip);
@@ -282,6 +308,7 @@ vector<Point> orthantScan(vector<Point> &points) {
 					  << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
 					<< " ms" << std::endl;
 		}
+		totalFindOuter += chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
 
 		t1 = Clock::now();
 		points.swap(ip);
@@ -304,11 +331,20 @@ vector<Point> orthantScan(vector<Point> &points) {
 			cout << p.x << " " << p.y << endl;
 		}
 		 */
+
+		iterations++;
 	}
 
 
 	cout << "Size: " << bp.size() << endl;
+	cout << "Number of iterations: " << iterations << endl;
+	cout << "Total time maxOrthantPoints: " << totalOrtantPoints << "ms" << endl;
+	cout << "Total time grahamScan: " << totalGrahamScan << "ms" << endl;
+	cout << "Total time findOuter: " << totalFindOuter << "ms" << endl;
 
+	cout << "Average time maxOrthantPoints: " << totalOrtantPoints/iterations << "ms" << endl;
+	cout << "Average time grahamScan: " << totalGrahamScan/iterations << "ms" << endl;
+	cout << "Average time findOuter: " << totalFindOuter/iterations << "ms" << endl;
 
 
 	ofstream poi;

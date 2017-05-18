@@ -1,10 +1,10 @@
 CC = g++
 GNUPLOT = gnuplot
-FLAGS = -pedantic -Wall -std=c++11 -g
+FLAGS = -pedantic -Wall -std=c++11 -g -fopenmp -lpthread
 PFLAGS = -fopenmp -lpthread
 
 main.out: main.cpp orthant_scan.o point.o graham_scan.o
-	$(CC) $(FLAGS) $(PFLAGS) $^ -o $@
+	$(CC) $(FLAGS) $^ -o $@
 
 point.o: point.cpp
 	$(CC) $(FLAGS) -c $^
